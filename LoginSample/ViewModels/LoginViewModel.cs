@@ -282,10 +282,20 @@ namespace LoginSample.ViewModels
         /// <param name="e"></param>
         private void BkDoWork(object sender, DoWorkEventArgs e)
         {
-            for (var i = 0; i < 100; i++)
+            var worker = sender as BackgroundWorker;
+
+            for (var i = 1; i <= 100; i++)
             {
-                Thread.Sleep(100);
-                ProgressValue = i + 1;
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                    ProgressValue = i + 1;
+                }
             }
 
             if (UserName == "WELL-E" && UserPwd == "123456")
