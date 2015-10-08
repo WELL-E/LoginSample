@@ -1,8 +1,12 @@
 ﻿<Window x:Class="LoginSample.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+        WindowStartupLocation="CenterScreen">
     <Grid>
-        
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Run Text="Hi" FontWeight="Bold"/>
+            <Run Text="{Binding Path=UserName, Mode=OneWay}" Foreground="Red" FontWeight="Bold" />
+        </TextBlock>
     </Grid>
 </Window>

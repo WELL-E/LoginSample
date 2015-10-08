@@ -1,15 +1,18 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using LoginSample.Comm;
+using LoginSample.Models;
 
 namespace LoginSample.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
         #region 字段 属性
-        private const string StringLogin = "登录";
-        private const string StringCancel = "取消";
+        private const string LoginString = "登录";
+        private const string CancelString = "取消";
 
         /// <summary>
         /// //关闭窗口
@@ -92,7 +95,7 @@ namespace LoginSample.ViewModels
             {
                 if (_loginContent == null)
                 {
-                    _loginContent = StringLogin;
+                    _loginContent = LoginString;
                 }
                 return _loginContent;
             }
@@ -175,8 +178,7 @@ namespace LoginSample.ViewModels
                 if (_loginCmd == null)
                 {
                     return new RelayCommand(
-                        p => UserLogin(),
-                        p => IsLogin);
+                        p => UserLogin());
                 }
 
                 return _loginCmd;
@@ -213,12 +215,10 @@ namespace LoginSample.ViewModels
             //登录线程
             _bkWorker = new BackgroundWorker
             {
-                WorkerReportsProgress = true,
                 WorkerSupportsCancellation = true
             };
 
             _bkWorker.DoWork += BkDoWork;
-            _bkWorker.ProgressChanged += BkWorkOnProgressChanged;
             _bkWorker.RunWorkerCompleted += BkRunWorkerCompleted;
 
         }
@@ -230,25 +230,29 @@ namespace LoginSample.ViewModels
         /// </summary>
         private void UserLogin()
         {
+            IsShowResult = false;
+
             //取消登录
-            if (LoginContent == StringCancel)
+            if (LoginContent == CancelString)
             {
-                IsLogin = false;
-                LoginContent = StringLogin;
-                _bkWorker.CancelAsync();
+                if (_bkWorker.WorkerSupportsCancellation)
+                {
+                    IsLogin = false;
+                    LoginContent = LoginString;
+                    _bkWorker.CancelAsync();
+                    return;
+                }
             }
 
             //登录
-            if (LoginContent == StringLogin)
+            if (LoginContent == LoginString)
             {
-                if (_bkWorker.IsBusy)
+                if (!_bkWorker.IsBusy)
                 {
-                    return;
+                    IsLogin = true;
+                    _bkWorker.RunWorkerAsync();
+                    LoginContent = CancelString;
                 }
-
-                IsLogin = true;
-                _bkWorker.RunWorkerAsync();
-                LoginContent = StringCancel;
             }
         }
 
@@ -257,7 +261,8 @@ namespace LoginSample.ViewModels
         /// </summary>
         private void HideLoginResult()
         {
-
+            ResultDescription = String.Empty;
+            IsShowResult = false;
         }
         #endregion
 
@@ -277,17 +282,24 @@ namespace LoginSample.ViewModels
         /// <param name="e"></param>
         private void BkDoWork(object sender, DoWorkEventArgs e)
         {
-            throw new NotImplementedException();
-        }
+            for (var i = 0; i < 100; i++)
+            {
+                Thread.Sleep(100);
+                ProgressValue = i + 1;
+            }
 
-        /// <summary>
-        /// 登录进度
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BkWorkOnProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            throw new NotImplementedException();
+            if (UserName == "WELL-E" && UserPwd == "123456")
+            {
+                //登录成功
+                e.Result = true;
+                ResultDescription = String.Empty;
+            }
+            else
+            {
+                //登录失败
+                e.Result = false;
+                ResultDescription = "用户名或密码错误！";
+            }
         }
 
         /// <summary>
@@ -297,7 +309,37 @@ namespace LoginSample.ViewModels
         /// <param name="e"></param>
         private void BkRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (e.Cancelled)
+            {
+                //取消
+            }
+            else if (e.Error != null)
+            {
+                //异常
+                ResultDescription = "登录异常: " + e.Error.Message;
+            }
+            else
+            {
+                if ((bool)e.Result)
+                {
+                    var user = new UserModel
+                    {
+                        UserName = UserName,
+                        UserPwd = UserPwd
+                    };
+
+                    var winMain = new MainWindow();
+                    Application.Current.MainWindow = winMain;
+                    winMain.DataContext = new MainWindowViewModel(user);
+                    _closeAction.Invoke();
+                    winMain.Show();
+                }
+                else
+                {
+                    LoginContent = LoginString;
+                    IsShowResult = true;
+                }
+            }
         }
         #endregion
 

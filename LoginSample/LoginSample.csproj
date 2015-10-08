@@ -101,7 +101,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\LoginInfoModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

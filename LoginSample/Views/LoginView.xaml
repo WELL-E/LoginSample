@@ -34,7 +34,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid ShowGridLines="True">
+    <Grid ShowGridLines="False">
         <Grid.RowDefinitions>
             <RowDefinition Height="180"/>
             <RowDefinition Height="35"/>
@@ -93,15 +93,16 @@
                 </ctrls:CaptionButton.Background>
             </ctrls:CaptionButton>
 
-            <WrapPanel Margin="0,0,-50,0" 
-                       DockPanel.Dock="Bottom"
-                       Visibility="{Binding Path=IsLogin, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <ProgressBar IsIndeterminate="True"
-                             Width="440"
+            <StackPanel Margin="0,0,-60,0" 
+                        HorizontalAlignment="Stretch"
+                        DockPanel.Dock="Bottom"
+                        Visibility="{Binding Path=IsLogin, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ProgressBar Height="8"
                              Minimum="0"
                              Maximum="100"
-                             Foreground="White"/>
-            </WrapPanel>
+                             Foreground="White"
+                             Value="{Binding Path=ProgressValue}"/>
+            </StackPanel>
         </DockPanel>
 
         <Grid Grid.Row="1" 
@@ -213,7 +214,7 @@
               Grid.Column="0" 
               Grid.ColumnSpan="3" 
               Background="#FFFAF3D3"
-              Visibility="{Binding Path=IsShowResult, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=false}">
+              Visibility="{Binding Path=IsShowResult, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="25"/>
