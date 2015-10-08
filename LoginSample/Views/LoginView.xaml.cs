@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using GlowingWindow;
 using LoginSample.Hepler;
+using LoginSample.ViewModels;
 
 namespace LoginSample.Views
 {
     /// <summary>
     /// LoginView.xaml 的交互逻辑
     /// </summary>
-    public partial class LoginView : Window
+    public partial class LoginView
     {
         private WindowGlow _glow;
 
@@ -20,6 +23,7 @@ namespace LoginSample.Views
         {
             InitializeComponent();
 
+            this.DataContext = new LoginViewModel(LoginViewClose);
             this.MouseLeftButtonDown += OnMouseLeftButtonDown;
         }
 
@@ -32,6 +36,16 @@ namespace LoginSample.Views
             _glow.Attach(this);
             _glow.ActiveColor = Colors.Red;
             _glow.InactiveColor = Colors.Gray;
+        }
+
+        private void LoginViewClose()
+        {
+            if (_glow != null)
+            {
+                _glow.Detach();
+            }
+
+            this.Close();
         }
 
         private void LoginView_OnClosed(object sender, EventArgs e)
@@ -69,17 +83,26 @@ namespace LoginSample.Views
 
         private void PbPwd_OnPasswordChanged(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var passwordtext = (PasswordBox)sender;
+            SetPasswordBoxSelection(passwordtext, passwordtext.Password.Length + 1, passwordtext.Password.Length + 1);
+        }
+
+        private static void SetPasswordBoxSelection(PasswordBox passwordBox, int start, int length)
+        {
+            var select = passwordBox.GetType().GetMethod("Select",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+            select.Invoke(passwordBox, new object[] { start, length });
         }
 
         private void Close_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            LoginViewClose();
         }
 
         private void Min_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            this.WindowState = WindowState.Minimized;
         }
     }
 }

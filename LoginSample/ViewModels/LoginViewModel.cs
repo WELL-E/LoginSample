@@ -7,6 +7,7 @@ namespace LoginSample.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
+        #region 字段 属性
         private const string StringLogin = "登录";
         private const string StringCancel = "取消";
 
@@ -118,6 +119,21 @@ namespace LoginSample.ViewModels
         }
 
         /// <summary>
+        /// 登录进度
+        /// </summary>
+        private int _progressValue;
+
+        public int ProgressValue
+        {
+            get { return _progressValue; }
+            set
+            {
+                _progressValue = value;
+                OnPropertyChanged("ProgressValue");
+            }
+        }
+
+        /// <summary>
         /// 是否显示登录结果 
         /// </summary>
         private bool _isShowResult;
@@ -168,21 +184,6 @@ namespace LoginSample.ViewModels
         }
 
         /// <summary>
-        /// 登录进度
-        /// </summary>
-        private int _progressValue;
-
-        public int ProgressValue
-        {
-            get { return _progressValue; }
-            set
-            {
-                _progressValue = value;
-                OnPropertyChanged("ProgressValue");
-            }
-        }
-
-        /// <summary>
         /// 隐藏登录结果信息命令
         /// </summary>
         private RelayCommand _hideResultCmd;
@@ -201,7 +202,9 @@ namespace LoginSample.ViewModels
                 return _hideResultCmd;
             }
         }
+        #endregion
 
+        #region 构造函数
         public LoginViewModel(Action closeAction)
         {
             //关闭窗口
@@ -219,16 +222,9 @@ namespace LoginSample.ViewModels
             _bkWorker.RunWorkerCompleted += BkRunWorkerCompleted;
 
         }
+        #endregion
 
-        /// <summary>
-        /// 用户名和密码校验
-        /// </summary>
-        private bool VerifyUserInfo()
-        {
-           
-            return true;
-        }
-
+        #region 命令函数
         /// <summary>
         /// 用户登录
         /// </summary>
@@ -256,13 +252,22 @@ namespace LoginSample.ViewModels
             }
         }
 
-
         /// <summary>
         /// 隐藏登录结果信息
         /// </summary>
         private void HideLoginResult()
         {
-            
+
+        }
+        #endregion
+
+        #region 操作函数
+        /// <summary>
+        /// 用户名和密码校验
+        /// </summary>
+        private bool VerifyUserInfo()
+        {
+            return true;
         }
 
         /// <summary>
@@ -294,6 +299,7 @@ namespace LoginSample.ViewModels
         {
             throw new NotImplementedException();
         }
+        #endregion
 
     }
 }
