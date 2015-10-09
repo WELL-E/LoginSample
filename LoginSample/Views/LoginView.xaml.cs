@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -72,12 +73,12 @@ namespace LoginSample.Views
 
         private void LinkReg_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            Process.Start("https://github.com/WELL-E");
         }
 
         private void LinRecoverPwd_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            Process.Start("https://github.com/WELL-E");
         }
 
         private void PbPwd_OnPasswordChanged(object sender, RoutedEventArgs e)
