@@ -53,27 +53,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\ComGuids.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Debug.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\DoubleUtil.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\DpiHelper.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\ErrorCodes.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\MessageWindow.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\NativeMethods.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\ShellProvider.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\StreamHelper.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Utilities.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Utilities.Windows.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Utilities.Wpf.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Verify.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\SystemCommands.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\SystemParameters2.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\WindowChrome.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\WindowChromeWorker.cs" />
-    <Compile Include="GlowingWindow\SideGlow.cs" />
-    <Compile Include="GlowingWindow\WindowGlow.cs" />
-    <Compile Include="GlowingWindow\WindowsAPI.cs" />
-    <Compile Include="GlowingWindow\WindowsMessages.cs" />
     <Compile Include="Hepler\WindowsHepler.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
