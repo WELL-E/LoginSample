@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LoginSample.Comm;
@@ -11,18 +11,15 @@ namespace LoginSample.ViewModels
     public class LoginViewModel : ViewModelBase
     {
         #region 字段 属性
-        private const string LoginString = "登录";
-        private const string CancelString = "取消";
-
         /// <summary>
         /// //关闭窗口
         /// </summary>
         private readonly Action _closeAction;
 
         /// <summary>
-        /// 登录线程
+        /// 
         /// </summary>
-        private readonly BackgroundWorker _bkWorker;
+        private CancellationTokenSource _cts;
 
         /// <summary>
         /// 用户名
@@ -85,40 +82,27 @@ namespace LoginSample.ViewModels
         }
 
         /// <summary>
-        /// 登录按钮文本
+        /// 正在登录状态
         /// </summary>
-        private string _loginContent;
+        private bool _isLogging;
 
-        public string LoginContent
+        public bool IsLogging
         {
-            get
-            {
-                if (_loginContent == null)
-                {
-                    _loginContent = LoginString;
-                }
-                return _loginContent;
-            }
+            get { return _isLogging; }
             set
             {
-                _loginContent = value;
-                OnPropertyChanged("LoginContent");
+                _isLogging = value;
+                OnPropertyChanged("IsLogging");
+                OnPropertyChanged("IsNotLogging");
             }
         }
 
         /// <summary>
-        /// 是否正在登录
+        /// 非登录状态
         /// </summary>
-        private bool _isLogin = false;
-
-        public bool IsLogin
+        public bool IsNotLogging
         {
-            get { return _isLogin; }
-            set
-            {
-                _isLogin = value;
-                OnPropertyChanged("IsLogin");
-            }
+            get { return !_isLogging; }
         }
 
         /// <summary>
@@ -169,7 +153,7 @@ namespace LoginSample.ViewModels
         /// <summary>
         /// 登录命令
         /// </summary>
-        private RelayCommand _loginCmd;
+        private ICommand _loginCmd;
 
         public ICommand LoginCmd
         {
@@ -177,11 +161,25 @@ namespace LoginSample.ViewModels
             {
                 if (_loginCmd == null)
                 {
-                    return new RelayCommand(
-                        p => UserLogin());
+                    return new RelayCommand(p => UserLogging());
                 }
 
                 return _loginCmd;
+            }
+        }
+
+        private ICommand _cancelCmd;
+
+        public ICommand CancelCmd
+        {
+            get
+            {
+                if (_cancelCmd == null)
+                {
+                    return new RelayCommand(p => _cts.Cancel());
+                }
+
+                return _cancelCmd;
             }
         }
 
@@ -196,9 +194,7 @@ namespace LoginSample.ViewModels
             {
                 if (_hideResultCmd == null)
                 {
-                    return new RelayCommand(
-                        p => HideLoginResult(),
-                        p=>IsShowResult);
+                    return new RelayCommand(p => HideLoginResult(), p=>IsShowResult);
                 }
 
                 return _hideResultCmd;
@@ -212,48 +208,119 @@ namespace LoginSample.ViewModels
             //关闭窗口
             this._closeAction = closeAction;
 
-            //登录线程
-            _bkWorker = new BackgroundWorker
+            //自动登录
+            if (IsAutoLogin)
             {
-                WorkerSupportsCancellation = true
-            };
-
-            _bkWorker.DoWork += BkDoWork;
-            _bkWorker.RunWorkerCompleted += BkRunWorkerCompleted;
-
+                LoginCmd.Execute(null);
+            }
         }
         #endregion
 
-        #region 命令函数
+
+        #region 登录操作
         /// <summary>
         /// 用户登录
         /// </summary>
-        private void UserLogin()
+        private async void UserLogging()
         {
+            if (!VerifyUserInfoLocal()) return;
+
+            IsLogging = true;
             IsShowResult = false;
 
-            //取消登录
-            if (LoginContent == CancelString)
+            var result = false; 
+            var progressIndicator = new Progress<int>(ReportProgress);
+            _cts = new CancellationTokenSource();
+
+            try
             {
-                if (_bkWorker.WorkerSupportsCancellation)
-                {
-                    IsLogin = false;
-                    LoginContent = LoginString;
-                    _bkWorker.CancelAsync();
-                    return;
-                }
+                result = await ImplLogin(progressIndicator, _cts.Token);
+            }
+            catch (TaskCanceledException ex) // 测试环境: Task.Delay(100, ct)
+            {
+                ResultDescription = ex.Message;
+            }
+            //catch (OperationCanceledException ex) // 生成环境: ct.ThrowIfCancellationRequested()
+            //{
+            //    ResultDescription = ex.Message;
+            //}
+            catch (Exception ex)
+            {
+                ResultDescription = ex.Message;
+            }
+            finally
+            {
+                _cts.Dispose();
             }
 
-            //登录
-            if (LoginContent == LoginString)
+            IsLogging = false;
+
+            //显示主窗体
+            if (result)
             {
-                if (!_bkWorker.IsBusy)
+                ShowMainWindow();
+            }
+            else
+            {
+                ProgressValue = 0;
+                if (!_cts.IsCancellationRequested)
                 {
-                    IsLogin = true;
-                    _bkWorker.RunWorkerAsync();
-                    LoginContent = CancelString;
+                    IsShowResult = true;
                 }
             }
+        }
+
+        /// <summary>
+        /// 执行用户登录
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        private async Task<bool> ImplLogin(IProgress<int> progress, CancellationToken ct)
+        {
+            return await Task.Run(async () =>
+            {
+                var model = await GetUserInfoAsync(progress, ct);
+
+                if (!model.UserName.Equals("WELL-E", StringComparison.OrdinalIgnoreCase)
+                    || !UserPwd.Equals("123456", StringComparison.OrdinalIgnoreCase))
+                {
+                    ResultDescription = "用户名或密码错误！";
+                    return false;
+                }
+
+                ResultDescription = String.Empty;
+                return true;
+            }, ct);
+        }
+
+        /// <summary>
+        /// 模拟从服务端获取用户信息
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        private async Task<UserModel> GetUserInfoAsync(IProgress<int> progress, CancellationToken ct)
+        {
+            return await Task.Run(async () =>
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    await Task.Delay(100, ct);
+                    progress.Report(i);
+                }
+
+                return new UserModel { UserName = "WELL-E", UserPwd = "123456" };
+            }, ct);
+        }
+
+        /// <summary>
+        /// 更新进度
+        /// </summary>
+        /// <param name="value"></param>
+        private void ReportProgress(int value)
+        {
+            ProgressValue = value;
         }
 
         /// <summary>
@@ -264,93 +331,47 @@ namespace LoginSample.ViewModels
             ResultDescription = String.Empty;
             IsShowResult = false;
         }
-        #endregion
 
-        #region 操作函数
         /// <summary>
         /// 用户名和密码校验
         /// </summary>
-        private bool VerifyUserInfo()
+        private bool VerifyUserInfoLocal()
         {
+            if (String.IsNullOrEmpty(UserName))
+            {
+                IsShowResult = true;
+                ResultDescription = "用户名不能为空！";
+                return false;
+            }
+
+            if (String.IsNullOrEmpty(UserPwd))
+            {
+                IsShowResult = true;
+                ResultDescription = "密码不能为空！";
+                return false;
+            }
+
             return true;
         }
 
         /// <summary>
-        /// 登录线程
+        /// 显示主窗体
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BkDoWork(object sender, DoWorkEventArgs e)
+        private void ShowMainWindow()
         {
-            var worker = sender as BackgroundWorker;
+            var user = new UserModel
+            {
+                UserName = UserName,
+                UserPwd = UserPwd
+            };
 
-            for (var i = 1; i <= 100; i++)
-            {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    break;
-                }
-                else
-                {
-                    Thread.Sleep(100);
-                    ProgressValue = i + 1;
-                }
-            }
-
-            if (UserName == "WELL-E" && UserPwd == "123456")
-            {
-                //登录成功
-                e.Result = true;
-                ResultDescription = String.Empty;
-            }
-            else
-            {
-                //登录失败
-                e.Result = false;
-                ResultDescription = "用户名或密码错误！";
-            }
+            var winMain = new MainWindow();
+            Application.Current.MainWindow = winMain;
+            winMain.DataContext = new MainWindowViewModel(user);
+            _closeAction.Invoke();
+            winMain.Show();
         }
 
-        /// <summary>
-        /// 登录完成
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BkRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                //取消
-            }
-            else if (e.Error != null)
-            {
-                //异常
-                ResultDescription = "登录异常: " + e.Error.Message;
-            }
-            else
-            {
-                if ((bool)e.Result)
-                {
-                    var user = new UserModel
-                    {
-                        UserName = UserName,
-                        UserPwd = UserPwd
-                    };
-
-                    var winMain = new MainWindow();
-                    Application.Current.MainWindow = winMain;
-                    winMain.DataContext = new MainWindowViewModel(user);
-                    _closeAction.Invoke();
-                    winMain.Show();
-                }
-                else
-                {
-                    LoginContent = LoginString;
-                    IsShowResult = true;
-                }
-            }
-        }
         #endregion
 
     }

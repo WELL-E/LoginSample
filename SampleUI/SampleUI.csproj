@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -47,7 +48,23 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Accents\Blue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Accents\Orange.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Accents\Purple.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\CaptionButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Dark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -55,30 +72,56 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\GlowWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\MetroWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ResizeGrip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Util\IWindowSettings.cs" />
+    <Compile Include="Controls\ResizeGrip.cs" />
+    <Compile Include="Controls\Util\WindowAction.cs" />
+    <Compile Include="Converters\WindowStateToVisibilityConverter.cs" />
+    <Compile Include="GlowingWindow\Behaviors\MetroChromeBehavior.cs" />
     <Compile Include="Controls\CaptionButton.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\ComGuids.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Debug.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\DoubleUtil.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\DpiHelper.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\ErrorCodes.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\MessageWindow.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\NativeMethods.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\ShellProvider.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\StreamHelper.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Utilities.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Utilities.Windows.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Utilities.Wpf.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\Standard\Verify.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\SystemCommands.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\SystemParameters2.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\WindowChrome.cs" />
-    <Compile Include="GlowingWindow\Microsoft.Windows.Shell\WindowChromeWorker.cs" />
-    <Compile Include="GlowingWindow\SideGlow.cs" />
-    <Compile Include="GlowingWindow\WindowGlow.cs" />
-    <Compile Include="GlowingWindow\WindowsAPI.cs" />
-    <Compile Include="GlowingWindow\WindowsMessages.cs" />
+    <Compile Include="Controls\MetroWindow.cs" />
+    <Compile Include="GlowingWindow\Dpi.cs" />
+    <Compile Include="GlowingWindow\Extensions.cs" />
+    <Compile Include="Controls\Util\InternalExtensions.cs" />
+    <Compile Include="GlowingWindow\Models\ChromeMode.cs" />
+    <Compile Include="GlowingWindow\MonitorDpiType.cs" />
+    <Compile Include="GlowingWindow\PerMonitorDpi.cs" />
+    <Compile Include="GlowingWindow\Win32\ClassLongFlags.cs" />
+    <Compile Include="GlowingWindow\Win32\ClassStyles.cs" />
+    <Compile Include="GlowingWindow\Win32\GWL.cs" />
+    <Compile Include="GlowingWindow\Win32\HitTestValues.cs" />
+    <Compile Include="GlowingWindow\Win32\MonitorDefaultTo.cs" />
+    <Compile Include="GlowingWindow\Win32\NativeExtensions.cs" />
+    <Compile Include="GlowingWindow\Win32\NativeMethods.cs" />
+    <Compile Include="GlowingWindow\Win32\SW.cs" />
+    <Compile Include="GlowingWindow\Win32\SWP.cs" />
+    <Compile Include="GlowingWindow\Win32\WINDOWPLACEMENT.cs" />
+    <Compile Include="GlowingWindow\Win32\WM.cs" />
+    <Compile Include="GlowingWindow\Win32\WS.cs" />
+    <Compile Include="GlowingWindow\Win32\WSEX.cs" />
+    <Compile Include="GlowingWindow\Glowing\GlowWindow.cs" />
+    <Compile Include="GlowingWindow\Glowing\GlowWindowProcessor.cs" />
+    <Compile Include="GlowingWindow\Glowing\GlowWindowProcessorBottom.cs" />
+    <Compile Include="GlowingWindow\Glowing\GlowWindowProcessorLeft.cs" />
+    <Compile Include="GlowingWindow\Glowing\GlowWindowProcessorRight.cs" />
+    <Compile Include="GlowingWindow\Glowing\GlowWindowProcessorTop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -101,6 +144,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Styles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

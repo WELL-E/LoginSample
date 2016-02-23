@@ -1,6 +1,7 @@
-﻿<Window x:Class="LoginSample.MainWindow"
+﻿<metro:MetroWindow x:Class="LoginSample.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:metro="clr-namespace:SampleUI.Controls;assembly=SampleUI"
         Title="MainWindow" Height="350" Width="525"
         WindowStartupLocation="CenterScreen">
     <Grid>
@@ -9,4 +10,4 @@
             <Run Text="{Binding Path=UserName, Mode=OneWay}" Foreground="Red" FontWeight="Bold" />
         </TextBlock>
     </Grid>
-</Window>
+</metro:MetroWindow>
