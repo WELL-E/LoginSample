@@ -4,12 +4,13 @@
                    xmlns:local="clr-namespace:LoginSample.Hepler"
                    xmlns:ctrls="clr-namespace:SampleUI.Controls;assembly=SampleUI"
                    Title="LoginView" 
-                   Height="360"    
+                   Height="340"    
                    Width="440"
                    SizeToContent="Height"
+                   ResizeMode="NoResize"
                    WindowStartupLocation="CenterScreen"
                    Topmost="True"
-                   ctrls:MetroWindow.IsCaptionBar="False">
+                   IsCaptionBar="False">
     
     <Window.Resources>
         <!--converter-->

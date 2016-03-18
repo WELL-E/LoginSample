@@ -33,12 +33,12 @@ namespace LoginSample.Views
 
         private void ChkRemeberPwd_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void ChkAutoLogin_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void LinkReg_OnClick(object sender, RoutedEventArgs e)
